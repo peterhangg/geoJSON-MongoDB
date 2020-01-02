@@ -4,9 +4,13 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const PORT = process.env.PORT || 8080;
 const app = express();
+const connectDB = require("./config/db");
 
-// load env vars
+// Load env vars
 dotenv.config({ path: "./config/config.env" });
+
+// Connect to database
+connectDB();
 
 app.use(express.json());
 app.use(cors());
