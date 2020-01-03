@@ -30,7 +30,7 @@ const StoreSchema = new mongoose.Schema({
   }
 });
 
-// Geocode & create location
+// Geocode & create location middleware
 StoreSchema.pre("save", async function(next) {
   // this will return us metadata of the provided address (ex: city, state, zipcode, long/lat, etc)
   const loc = await geocoder.geocode(this.address);
@@ -41,7 +41,7 @@ StoreSchema.pre("save", async function(next) {
     formattedAddress: loc[0].formattedAddress
   }
 
-  // Do not save address to DB
+  // Prevent address to be saved into DB
   this.address = undefined;
   next();
 });
