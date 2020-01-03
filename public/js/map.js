@@ -7,9 +7,33 @@ const map = new mapboxgl.Map({
   center: [-71.157895, 42.707741]
 });
 
-// mapbox gl js 'add a icon to map'
-const loadMap = () => {
+// Fetch store from API
+const getStores = async () => {
+  // fetching all stores from database
+  const res = await fetch("/api/v1/stores");
+  const data = await res.json();
+  
+  const stores = data.data.map(store => {
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [store.location.coordinates[0], store.location.coordinates[1]]
+      },
+      properties: {
+        storeId: store.storeId,
+        icon: 'shop'
+      }
+    };
+  });
+
+  loadMap(stores);
+}
+
+// Load map with stores
+const loadMap = (stores) => {
   map.on("load", function() {
+    // mapbox gl js 'add a icon to map'
     map.addLayer({
       id: "points",
       type: "symbol",
@@ -17,21 +41,10 @@ const loadMap = () => {
         type: "geojson",
         data: {
           type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [-71.157895, 42.707741]
-              },
-              properties: {
-                storeId: "0001",
-                icon: "shop"
-              }
-            }
-          ]
+          features: stores
         }
       },
+      // more layout options can be found in mapbox doc
       layout: {
         "icon-image": "{icon}-15",
         "icon-size": 1.5,
@@ -44,4 +57,4 @@ const loadMap = () => {
   });
 };
 
-loadMap();
+getStores();
